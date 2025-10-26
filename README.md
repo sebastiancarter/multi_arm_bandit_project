@@ -1,4 +1,3 @@
-
 ### CS440 Fall 2025
 
 In this assignment you will better understand how to balance exploration and exploitation by implementing some of the most famous and powerful multi-armed bandit algorithms.
@@ -71,12 +70,12 @@ Total Points: 100 (plus an optional 7 if you do the extra credit)
 **Reference Graphs:**
 
 Gaussian10Arm.png:
-
+![](README_IMS/Gaussian10Arm.png)
 
 Binary5Arm.png:
+![](README_IMS/Binary5Arm.png)
 
 
 Delay5Arm.png:
-
-
+![](README_IMS/Delay5Arm.png)
 _Note: UCB-1 is a bit hard to see in this last one, but it is overlapping UCB-0.01._
