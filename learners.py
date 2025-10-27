@@ -31,20 +31,40 @@ class MABLearner(object):
 class EpsilonGreedy(MABLearner):
 
     def __init__(self, epsilon):
-        #YOUR CODE HERE
-        pass #remove once implemented
+        self.epsilon = epsilon
+        self.armCounts = []
+        self.armTotals = []
         
-    def initWithEnvironment(self,env):
-        #YOUR CODE HERE
-        return False #Change to return True once implemented
+    def initWithEnvironment(self, env):
+        self.environment = env
+        self.numArms = self.environment.getNumArms()
+        self.armCounts = []
+        self.armTotals = []
+        for arm in range(self.numArms):
+            self.armCounts.append(0)
+            self.armTotals.append(0)
+        return True
 
     def chooseArm(self):
-        #YOUR CODE HERE
-        pass #remove once implemented
-
+        if random.random() < self.epsilon: # exploration
+            return random.randrange(self.numArms)
+        else: # exploitation
+            maxArm = None
+            maxScore = None
+            for armIdx in range(self.numArms):
+                if self.armCounts[armIdx] == 0:
+                    continue # continue to avoid division by zero
+                meanReward = self.armTotals[armIdx] / self.armCounts[armIdx]
+                if maxScore is None or meanReward > maxScore:
+                    maxScore = meanReward
+                    maxArm = armIdx
+            if maxArm is None: # all arms have 0 counts, choose randomly
+                return random.randrange(self.numArms)
+            return maxArm
+        
     def processReward(self,arm, reward):
-        #YOUR CODE HERE
-        pass #remove once implemented
+        self.armCounts[arm] += 1
+        self.armTotals[arm] += reward
 
 # Implements the UCB algorithm as discussed in class
 class UCB(MABLearner):
