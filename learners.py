@@ -124,16 +124,43 @@ class ThompsonDiscrete(MABLearner):
         pass #remove once implemented
         
     def initWithEnvironment(self,env):
-        #YOUR CODE HERE
-        return False #Change to return True once implemented
+        # beta bernouli so need to set up alpha and beta values for each arm
+        self.numArms = env.getNumArms()
+        self.maxReward = env.getMaxReward()
+        self.minReward = env.getMinReward()
+        self.armAlphasNBetas = []
+        for arm in range(self.numArms):
+            alphaBetaTupe = (1,1) 
+            self.armAlphasNBetas.append(alphaBetaTupe) # alpha, beta
+        return True
+    
 
     def chooseArm(self):
-        #YOUR CODE HERE
-        pass #remove once implemented
+        maxArm = None
+        maxSample = None
+        for armIdx in range(self.numArms):
+            (alpha, beta) = self.armAlphasNBetas[armIdx]
+            beta = dists.BetaDistribution(alpha, beta)
+            sample = beta.sample()
+            if maxSample is None or sample > maxSample:
+                maxSample = sample
+                maxArm = armIdx
+
+        return maxArm
+            
         
     def processReward(self,arm, reward):
-        #YOUR CODE HERE
-        pass #remove once implemented
+        normalizedReward = (reward - self.minReward) / (self.maxReward - self.minReward)
+        (alpha, beta) = self.armAlphasNBetas[arm]
+        if normalizedReward < random.random():
+            # treat as failure
+            beta += 1
+            self.armAlphasNBetas[arm] = (alpha, beta)
+        else:
+            # treat as success
+            alpha += 1
+            self.armAlphasNBetas[arm] = (alpha, beta)
+        pass
 
 
 
