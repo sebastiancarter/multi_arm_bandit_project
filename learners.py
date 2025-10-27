@@ -70,20 +70,50 @@ class EpsilonGreedy(MABLearner):
 class UCB(MABLearner):
 
     def __init__(self, alpha):
-        #YOUR CODE HERE
-        pass #remove once implemented
+        self.alpha = alpha
+        self.armCounts = []
+        self.armTotals = []
         
     def initWithEnvironment(self,env):
-        #YOUR CODE HERE
-        return False #Change to return True once implemented
+        self.numArms = env.getNumArms()
+        self.maxReward = env.getMaxReward()
+        self.minReward = env.getMinReward()
+        self.armCounts = []
+        self.armTotals = []
+        self.rewardCounts = 0 # AKA the timestep
+        for arm in range(self.numArms):
+            self.armCounts.append(0)
+            self.armTotals.append(0)
+        return True
+
+    def getUnpulledArms(self):
+        for armIdx in range(self.numArms):
+            if self.armCounts[armIdx] == 0:
+                return armIdx
+        return None
 
     def chooseArm(self):
-        #YOUR CODE HERE
-        pass #remove once implemented
         
+        maxArm = None
+        maxUcbValue = None
+        for armIdx in range(self.numArms):
+            # makes sure we pull each arm at least once
+            if self.armCounts[armIdx] == 0:
+                return armIdx
+            # don't need to check for div by zero because of above if statement
+            meanReward = self.armTotals[armIdx] / self.armCounts[armIdx]
+
+            ucbValue = meanReward + (self.alpha * math.sqrt((2 * math.log(self.rewardCounts)) / self.armCounts[armIdx]))
+            if maxUcbValue is None or ucbValue > maxUcbValue:
+                maxUcbValue = ucbValue
+                maxArm = armIdx
+        return maxArm
+ 
     def processReward(self,arm, reward):
-        #YOUR CODE HERE
-        pass #remove once implemented
+        self.armCounts[arm] += 1
+        normalizedReward = (reward - self.minReward) / (self.maxReward - self.minReward)
+        self.armTotals[arm] += normalizedReward
+        self.rewardCounts += 1
 
 # Implements the Beta-Bernoulli thompson sampling algorithm as discussed
 #in class.
